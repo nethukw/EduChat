@@ -63,7 +63,8 @@
     let chatHistory = [];
 
     // Gemini API Setup
-    const apiKey = "AIzaSyDpxBJ4gqeOs1w7vLEDI-Q7kL9Ik8YDBVU"; 
+
+const apiKey = "YOUR_EXPOSED_API_KEY";
 
     edubotForm.onsubmit = async (e) => {
         e.preventDefault();
