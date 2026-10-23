@@ -11,21 +11,21 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // Learning Sessions table එකට එකතු කිරීම
+        // Adding soft deletes to learning_sessions table
     Schema::table('learning_sessions', function (Blueprint $table) {
         if (!Schema::hasColumn('learning_sessions', 'deleted_at')) {
             $table->softDeletes();
         }
     });
 
-    // Questions table එකට එකතු කිරීම
+    // adding soft deletes to questions table
     Schema::table('questions', function (Blueprint $table) {
         if (!Schema::hasColumn('questions', 'deleted_at')) {
             $table->softDeletes();
         }
     });
 
-    // Answers table එකට එකතු කිරීම
+    // adding soft deletes to answers table
     Schema::table('answers', function (Blueprint $table) {
         if (!Schema::hasColumn('answers', 'deleted_at')) {
             $table->softDeletes();

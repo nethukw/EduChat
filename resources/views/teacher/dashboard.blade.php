@@ -24,7 +24,7 @@
 </div>
     </div>
 
-    <!-- 🔒 PROFILE COMPLETION SOFT BLOCKER -->
+    <!--  PROFILE COMPLETION SOFT BLOCKER -->
     @if($profilePercentage < 80)
     <div class="mb-6 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700 p-5 rounded-xl">
         <div class="flex items-start gap-3">
@@ -115,7 +115,7 @@
         </div>
     </div>
 
-    <!-- ✅ PROFILE COMPLETION CHECKLIST -->
+    <!--  PROFILE COMPLETION CHECKLIST -->
     <div class="mb-10 bg-white dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-700 p-6">
         <h4 class="font-bold text-gray-800 dark:text-white mb-4">
             Profile Completion Checklist

@@ -3,8 +3,6 @@
 namespace App\Notifications;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
 class NewSessionNotification extends Notification
@@ -12,11 +10,22 @@ class NewSessionNotification extends Notification
     use Queueable;
 
     /**
-     * Create a new notification instance.
+     * Store data required for the notification.
      */
-    public function __construct()
+    protected array $data;
+
+    /**
+     * Create a new notification instance.
+     *
+     * @param array $data
+     *  Expected keys:
+     *  - title   (string, optional)
+     *  - message (string, optional)
+     *  - link    (string|URL, optional)
+     */
+    public function __construct(array $data = [])
     {
-        //
+        $this->data = $data;
     }
 
     /**
@@ -24,20 +33,29 @@ class NewSessionNotification extends Notification
      */
     public function via(object $notifiable): array
     {
-        // ⚠️ IMPORTANT: Change 'mail' to 'database' for the Bell Icon to work
+        // Stored in database for bell icon
         return ['database'];
     }
 
     /**
      * Get the array representation of the notification.
-     * This data will be saved in the 'notifications' table.
+     * This data is stored in the `notifications` table.
      */
     public function toArray(object $notifiable): array
     {
+        // Default link based on user role (safe & future-proof)
+        $defaultLink = match ($notifiable->role) {
+            0 => route('student.sessions'),          // Student → Browse classes
+            1 => route('teacher.sessions.index'),    // Teacher → My sessions
+            2 => route('advisor.dashboard'),         // Advisor → Dashboard
+            3 => route('admin.sessions'),             // Admin → All sessions
+            default => route('dashboard'),
+        };
+
         return [
-            'title' => 'New Session Available! 🎓',
-            'message' => 'A new class has been posted. Check the Browse Classes section to enroll!',
-            'link' => '/sessions' // Optional link
+            'title'   => $this->data['title']   ?? 'New Notification! 🎓',
+            'message' => $this->data['message'] ?? 'Check your dashboard for updates.',
+            'link'    => $this->data['link']    ?? $defaultLink,
         ];
     }
 }

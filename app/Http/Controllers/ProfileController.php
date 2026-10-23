@@ -104,4 +104,38 @@ class ProfileController extends Controller
 
         return redirect('/')->with('status', 'account-deleted');
     }
+
+    /**
+     * 🖼️ Update User Avatar
+     */
+    public function updateAvatar(Request $request)
+    {
+        // 1. Validation: Verify file type (image) and file size constraints
+        $request->validate([
+            'avatar' => ['required', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048'],
+        ]);
+
+        $user = $request->user();
+
+        // 2. Remove previous image
+        if ($user->avatar && file_exists(public_path($user->avatar))) {
+            // Default avatar එකක් නෙවෙයි නම් විතරක් මකන්න
+            if (!str_contains($user->avatar, 'ui-avatars.com')) {
+                unlink(public_path($user->avatar));
+            }
+        }
+
+        // 3. අලුත් රූපය 'public/avatars' ෆෝල්ඩරයේ සේව් කිරීම
+        if ($request->hasFile('avatar')) {
+            $imageName = time() . '.' . $request->avatar->extension();
+            $request->avatar->move(public_path('avatars'), $imageName);
+            
+            // 4. ඩේටාබේස් එකේ path එක update කිරීම
+            $user->update([
+                'avatar' => '/avatars/' . $imageName,
+            ]);
+        }
+
+        return back()->with('success', 'Profile picture updated successfully! 📸');
+    }
 }

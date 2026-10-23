@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\LearningSession;
 use App\Models\User;
 use App\Models\Question;
-use App\Models\Answer; // ✅ Answer Model එක එකතු කළා
+use App\Models\Answer; 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -129,7 +129,7 @@ class StudentController extends Controller
 
     $questions = $query->latest()->paginate(10);
     
-    // දැනට පද්ධතියේ ඇති සියලුම Subjects ලබා ගැනීම
+    
     $subjects = Question::distinct()->pluck('subject_tag')->filter();
 
     return view('student.discussions', compact('questions', 'subjects', 'subject', 'search'));
@@ -150,7 +150,7 @@ class StudentController extends Controller
             'subject_tag' => $subject,
         ]);
 
-        // ලකුණු 5ක් ලබා දී ප්‍රවර්ධනය පරීක්ෂා කරයි
+        
         $this->addXpAndCheckPromotion(Auth::id(), 5, $subject);
 
         return back()->with('success', 'Discussion posted! You earned 5 XP points.');
@@ -172,7 +172,7 @@ class StudentController extends Controller
             'verification_status' => 'none'
         ]);
 
-        // පිළිතුරක් ලබා දුන් විට ලකුණු 2ක් ලබා දීම
+       
         $this->addXpAndCheckPromotion(Auth::id(), 2, $question->subject_tag ?? 'General');
 
         return back()->with('success', 'Reply posted successfully! +2 XP earned.');
@@ -220,25 +220,26 @@ class StudentController extends Controller
         return view('student.take-quiz', compact('quiz', 'questions'));
     }
 
-    public function submitQuiz(Request $request, $id)
-    {
-        $score = 50; // Mock Score
-        $category = 'Academic';
+   public function submitQuiz(Request $request, $id)
+{
+    $score = 50; // Mock Score
+    $category = 'Academic';
 
-        DB::table('quiz_results')->insert([
-            'student_id' => Auth::id(),
-            'quiz_id' => $id,
-            'score' => $score,
-            'total_questions' => 10,
-            'created_at' => now(),
-            'updated_at' => now()
-        ]);
+    DB::table('quiz_results')->insert([
+       
+        'user_id'         => Auth::id(), 
+        'quiz_id'         => $id,
+        'score'           => $score,
+        'total_questions' => 10,
+        'created_at'      => now(),
+        'updated_at'      => now()
+    ]);
 
-        // to add up XP and check for promotion
-        $this->addXpAndCheckPromotion(Auth::id(), $score, $category);
+    // to add up XP and check for promotion
+    $this->addXpAndCheckPromotion(Auth::id(), $score, $category);
 
-        return redirect()->route('student.quizzes')->with('success', 'Quiz completed! You earned ' . $score . ' XP.');
-    }
+    return redirect()->route('student.quizzes')->with('success', 'Quiz completed! You earned ' . $score . ' XP.');
+}
 
     /**
      * 💬 5. TOPIC REQUESTS
@@ -250,21 +251,24 @@ class StudentController extends Controller
         return view('student.requests', compact('myRequests', 'categories'));
     }
 
-    public function storeRequest(Request $request)
-    {
-        $request->validate(['subject' => 'required', 'topic' => 'required']);
+   public function storeRequest(Request $request)
+{
+    $request->validate([
+        'subject' => 'required', 
+        'topic' => 'required'
+    ]);
 
-        DB::table('topic_requests')->insert([
-            'student_id' => Auth::id(),
-            'subject' => $request->subject,
-            'topic' => $request->topic,
-            'description' => $request->description,
-            'created_at' => now(),
-            'updated_at' => now()
-        ]);
+    DB::table('topic_requests')->insert([
+        'student_id' => Auth::id(),
+        'subject'    => $request->subject, 
+        'topic'      => $request->topic,
+        'description'=> $request->description,
+        'created_at' => now(),
+        'updated_at' => now()
+    ]);
 
-        return back()->with('success', 'Topic request submitted.');
-    }
+    return back()->with('success', 'Topic request submitted.');
+}
 
     /**
      * 🎥 6. ENROLLMENT & MY LEARNING
@@ -364,4 +368,30 @@ class StudentController extends Controller
 
         return view('student.leaderboard', compact('rankings', 'subjects', 'subject', 'period'));
     }
+
+    public function storeRating(Request $request) {
+    $request->validate([
+        'teacher_id' => 'required',
+        'rating'     => 'required|integer|min:1|max:5',
+    ]);
+
+    // 🛡️ Security Check: ශිෂ්‍යයා මේ ගුරුවරයාගේ පන්තියකට Enroll වෙලා ඉන්නවාද?
+    $isEnrolled = DB::table('enrollments')
+        ->join('learning_sessions', 'enrollments.session_id', '=', 'learning_sessions.id')
+        ->where('enrollments.student_id', Auth::id())
+        ->where('learning_sessions.teacher_id', $request->teacher_id)
+        ->exists();
+
+    if (!$isEnrolled) {
+        return back()->with('error', 'ඔබ මෙම ගුරුවරයාගේ පන්තියකට සහභාගී වී නැති නිසා Rating ලබා දිය නොහැක.');
+    }
+
+    // දත්ත ඇතුළත් කිරීම
+    DB::table('teacher_ratings')->updateOrInsert(
+        ['student_id' => Auth::id(), 'teacher_id' => $request->teacher_id],
+        ['rating' => $request->rating, 'comment' => $request->comment, 'updated_at' => now()]
+    );
+
+    return back()->with('success', 'Rating එක සාර්ථකව ලබා දුන්නා! ස්තූතියි.');
+}
 }

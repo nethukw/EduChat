@@ -15,7 +15,7 @@
         </a>
     </div>
 
-    <!-- ➕ Add New Question Card -->
+    <!--  Add New Question Card -->
     <div class="bg-white dark:bg-slate-800 p-8 rounded-3xl shadow-sm border border-gray-100 dark:border-slate-700 mb-10 transition-all hover:shadow-md">
         <div class="flex items-center gap-3 mb-6">
             <div class="w-10 h-10 bg-indigo-600 text-white rounded-xl flex items-center justify-center shadow-lg shadow-indigo-200 dark:shadow-none">
@@ -62,7 +62,7 @@
         </form>
     </div>
 
-    <!-- 📋 Existing Questions List -->
+    <!--  Existing Questions List -->
     <div class="flex items-center justify-between mb-6 px-2">
         <h3 class="text-xl font-bold text-gray-800 dark:text-white">Question Bank</h3>
         <span class="text-xs font-bold text-gray-400 uppercase tracking-widest">{{ $questions->count() }} Total Questions</span>

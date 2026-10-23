@@ -16,12 +16,12 @@ class RoleMiddleware
 
         $user = Auth::user();
         
-        // පරීක්ෂා කරනවා යූසර්ගේ රෝල් එක අදාළ ලිස්ට් එකේ තියෙනවද කියලා
+        //Validate user role against the permitted roles list
         if (in_array($user->role, $roles)) {
             return $next($request);
         }
 
-        // අවසර නැත්නම් ආපහු හරවා යවනවා
+       // Redirect back if authorization fails
         return redirect()->route('dashboard')->with('error', 'You do not have permission to access this page.');
     }
 }

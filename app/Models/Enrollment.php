@@ -13,7 +13,7 @@ class Enrollment extends Model
 
     public function session()
     {
-        // ✅ FIXED: Session::class -> LearningSession::class
+       
         return $this->belongsTo(LearningSession::class, 'session_id');
     }
 

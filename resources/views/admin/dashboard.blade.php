@@ -108,6 +108,23 @@
             </tbody>
         </table>
     </div>
+    <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 mb-8">
+    <h3 class="font-bold text-gray-800 dark:text-white mb-4">Generate Periodical Report 📅</h3>
+    
+    <form action="{{ route('admin.reports.generate') }}" method="GET" class="flex flex-wrap items-end gap-4">
+        <div>
+            <label class="block text-xs font-bold text-gray-400 uppercase mb-2">From Date</label>
+            <input type="date" name="from_date" class="border-gray-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white rounded-lg p-2.5 text-sm" required>
+        </div>
+        <div>
+            <label class="block text-xs font-bold text-gray-400 uppercase mb-2">To Date</label>
+            <input type="date" name="to_date" class="border-gray-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white rounded-lg p-2.5 text-sm" required>
+        </div>
+        <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 px-6 rounded-lg shadow-md transition flex items-center gap-2">
+            <i class="fas fa-file-pdf"></i> Download PDF
+        </button>
+    </form>
+</div>
 
 </div>
 

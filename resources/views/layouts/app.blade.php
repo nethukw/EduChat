@@ -193,14 +193,25 @@
                                 @endif
                             </div>
                             <div class="max-h-64 overflow-y-auto">
-                                @forelse(Auth::user()->unreadNotifications as $notification)
-                                    <div class="block px-4 py-3 hover:bg-gray-50 dark:hover:bg-slate-700 transition border-b border-gray-50 dark:border-slate-700">
-                                        <p class="text-sm font-semibold text-gray-700 dark:text-gray-200">{{ $notification->data['title'] ?? 'Notification' }}</p>
-                                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">{{ $notification->data['message'] ?? '' }}</p>
-                                    </div>
+                                {{-- පරණ කෝඩ් එක වෙනුවට මේක දාන්න --}}
+@forelse(Auth::user()->unreadNotifications as $notification)
+                                {{-- මෙතැනදී අපි notification එකේ තියෙන link එකට ශිෂ්‍යයාව යවනවා --}}
+                                <a href="{{ route('notifications.read_single', $notification->id) }}"
+                                    class="block px-4 py-3 hover:bg-gray-50 dark:hover:bg-slate-700 transition border-b border-gray-50 dark:border-slate-700">
+
+                                    <p class="text-sm font-semibold text-gray-700 dark:text-gray-200">
+                                        {{ $notification->data['title'] ?? 'Notification' }}
+                                    </p>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                        {{ $notification->data['message'] ?? '' }}
+                                    </p>
+                                    <span class="text-[10px] text-primary font-medium mt-1 block">
+                                        {{ $notification->created_at->diffForHumans() }}
+                                    </span>
+                                </a>
                                 @empty
-                                    <div class="px-4 py-6 text-center text-gray-500 text-sm">No new notifications</div>
-                                @endforelse
+    <p class="p-4 text-center text-sm text-gray-500 italic">No new notifications</p>
+@endforelse
                             </div>
                         </div>
                     </div>

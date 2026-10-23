@@ -1,10 +1,8 @@
 @extends('layouts.app')
 
 @section('content')
-<!-- Teacher Quiz Management Dashboard -->
-<div class="max-w-7xl mx-auto px-4 py-8 animate-fade-in bg-slate-50/50 min-h-screen rounded-[3rem]">
+<div class="max-w-7xl mx-auto px-4 py-8 animate-fade-in bg-slate-50/50 min-h-screen rounded-[3rem] font-sans antialiased">
     
-    <!-- 🔝 Header Section -->
     <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-12 gap-8 px-4">
         <div>
             <h1 class="text-5xl font-black text-slate-900 dark:text-white uppercase tracking-tighter">
@@ -15,7 +13,6 @@
             </p>
         </div>
         
-        <!-- Teacher XP Badge -->
         <div class="group flex items-center gap-5 bg-white dark:bg-slate-800 px-8 py-5 rounded-[2.5rem] shadow-2xl shadow-indigo-500/10 border border-white dark:border-slate-700 transition-all hover:scale-105">
             <div class="w-14 h-14 bg-gradient-to-tr from-indigo-600 to-purple-600 rounded-2xl flex items-center justify-center text-white shadow-xl rotate-3 group-hover:rotate-0 transition-transform">
                 <i class="fas fa-award text-2xl"></i>
@@ -29,19 +26,36 @@
         </div>
     </div>
 
-    <!-- 🔔 Notification Alerts -->
-    @if(session('success'))
-    <div class="mx-4 mb-8 bg-emerald-50 border-l-4 border-emerald-400 p-5 rounded-r-2xl shadow-sm animate-fade-in flex items-center gap-4">
-        <div class="w-10 h-10 bg-emerald-100 rounded-full flex items-center justify-center text-emerald-600">
-            <i class="fas fa-check"></i>
+    <div class="px-4">
+        @if(session('success'))
+        <div class="mb-8 bg-emerald-50 border-l-4 border-emerald-400 p-5 rounded-r-2xl shadow-sm animate-fade-in flex items-center gap-4">
+            <div class="w-10 h-10 bg-emerald-100 rounded-full flex items-center justify-center text-emerald-600">
+                <i class="fas fa-check"></i>
+            </div>
+            <p class="text-emerald-800 font-bold text-sm uppercase tracking-wider">{{ session('success') }}</p>
         </div>
-        <p class="text-emerald-800 font-bold text-sm uppercase tracking-wider">{{ session('success') }}</p>
+        @endif
+
+        
+        @if ($errors->any())
+        <div class="mb-8 bg-red-50 border-l-4 border-red-400 p-5 rounded-r-2xl shadow-sm animate-fade-in">
+            <div class="flex items-center gap-4 mb-2">
+                <div class="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center text-red-600">
+                    <i class="fas fa-exclamation-triangle text-xs"></i>
+                </div>
+                <p class="text-red-800 font-black text-xs uppercase tracking-widest">Wait! Something is missing:</p>
+            </div>
+            <ul class="list-disc list-inside text-red-600 text-xs font-bold ml-12">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+        @endif
     </div>
-    @endif
 
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 px-4">
         
-        <!-- ➕ Sidebar: Create New Quiz -->
         <div class="lg:col-span-4">
             <div class="bg-white dark:bg-slate-800 p-10 rounded-[3rem] shadow-2xl shadow-slate-200/50 dark:shadow-none border border-slate-100 dark:border-slate-700 sticky top-24 transition-all group overflow-hidden">
                 <div class="absolute -top-10 -left-10 w-32 h-32 bg-indigo-500/5 rounded-full group-hover:scale-150 transition-transform duration-700"></div>
@@ -98,7 +112,6 @@
             </div>
         </div>
 
-        <!-- 📋 Active Quizzes List -->
         <div class="lg:col-span-8">
             <div class="flex items-center justify-between mb-10 px-4">
                 <div class="flex items-center gap-4">
@@ -125,13 +138,11 @@
                                 <div class="flex flex-wrap items-center gap-5">
                                     <div class="flex items-center gap-2 px-4 py-1.5 bg-indigo-50 dark:bg-slate-700 rounded-full border border-indigo-100 dark:border-slate-600">
                                         <i class="fas fa-link text-indigo-400 text-[10px]"></i>
-                                        {{-- ✅ FIXED: session_name to session_title to match Controller --}}
                                         <span class="text-[11px] font-black text-indigo-700 dark:text-gray-300 uppercase">{{ $quiz->session_title }}</span>
                                     </div>
                                     <div class="flex items-center gap-2 text-slate-400">
                                         <i class="far fa-calendar-alt text-xs"></i>
                                         <span class="text-[10px] font-black uppercase tracking-widest">
-                                            {{-- ✅ FIXED: Added check for created_at to prevent crash --}}
                                             @if(isset($quiz->created_at))
                                                 Created {{ \Carbon\Carbon::parse($quiz->created_at)->diffForHumans() }}
                                             @else
@@ -144,20 +155,17 @@
                         </div>
 
                         <div class="flex items-center gap-4 w-full md:w-auto">
-                            <!-- ✅ Manage Questions Link -->
                             <a href="{{ route('teacher.quizzes.manage', $quiz->id) }}" 
                                class="flex-1 md:flex-none text-center text-[12px] font-black text-indigo-600 bg-white dark:bg-slate-900 border-2 border-indigo-600 dark:border-indigo-500 hover:bg-indigo-600 hover:text-white px-10 py-4 rounded-2xl transition-all shadow-lg shadow-indigo-100 dark:shadow-none uppercase tracking-widest">
                                 Manage Questions
                             </a>
 
-                            <!-- ✅ Results Link -->
                             <a href="{{ route('teacher.quizzes.results', $quiz->id) }}" 
                                class="p-4 bg-emerald-600 text-white rounded-2xl hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-100 dark:shadow-none group/btn" 
                                title="View Results">
                                 <i class="fas fa-chart-pie text-xl group-hover/btn:scale-125 transition-transform"></i>
                             </a>
 
-                            <!-- Delete Form -->
                             <form action="{{ route('teacher.quizzes.destroy', $quiz->id) }}" method="POST" onsubmit="return confirm('Permanently delete this quiz?')">
                                 @csrf
                                 @method('DELETE')
@@ -169,7 +177,6 @@
                     </div>
                 </div>
                 @empty
-                <!-- 🏜️ Empty State -->
                 <div class="text-center py-40 bg-white dark:bg-slate-800 rounded-[4rem] border-4 border-dashed border-slate-100 dark:border-slate-700">
                     <div class="w-40 h-40 bg-slate-50 dark:bg-slate-900 rounded-full flex items-center justify-center mx-auto mb-10 text-slate-200 dark:text-slate-700 text-8xl animate-pulse">
                         <i class="fas fa-clipboard-list"></i>

@@ -8,7 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        // ✅ Prevent duplicate table creation
+        //  Prevent duplicate table creation
         if (!Schema::hasTable('notifications')) {
             Schema::create('notifications', function (Blueprint $table) {
                 $table->uuid('id')->primary();

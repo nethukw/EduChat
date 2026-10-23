@@ -3,48 +3,60 @@
 @section('content')
 <div class="max-w-4xl mx-auto">
     <div class="flex items-center justify-between mb-6">
+        {{-- Displaying the main heading --}}
         <h1 class="text-2xl font-bold text-gray-800 dark:text-white">Manage Session ✏️</h1>
+        {{-- Link to go back to the session list --}}
         <a href="{{ route('teacher.sessions.index') }}" class="text-gray-500 hover:text-gray-700">Back to List</a>
     </div>
 
     <div class="grid grid-cols-1 gap-8">
         
+    {{-- SECTION 1: EDIT SESSION DETAILS --}}
         <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg p-8 border border-gray-100 dark:border-slate-700">
             <h3 class="text-lg font-bold text-gray-800 dark:text-white mb-4 border-b pb-2 dark:border-slate-700">Session Details</h3>
             
+            {{-- This form sends data to the updateSession() function in the Controller --}}
             <form action="{{ route('teacher.sessions.update', $session->id) }}" method="POST">
                 @csrf
                 @method('POST')
 
+                {{-- Field for Session Title --}}
                 <div class="mb-5">
                     <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Session Title</label>
                     <input type="text" name="title" value="{{ $session->title }}" class="w-full border-gray-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white rounded-lg p-3 focus:ring-2 focus:ring-primary" required>
                 </div>
 
+                {{-- Field for Long Description --}}
                 <div class="mb-5">
                     <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Description</label>
                     <textarea name="description" rows="3" class="w-full border-gray-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white rounded-lg p-3">{{ $session->description }}</textarea>
                 </div>
 
+                {{-- Zoom or Meeting Link field --}}
                 <div class="mb-5">
                     <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Meeting Link</label>
                     <input type="url" name="meeting_link" value="{{ $session->meeting_link }}" class="w-full border-gray-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white rounded-lg p-3" placeholder="https://zoom.us/...">
                 </div>
 
                 <div class="grid grid-cols-2 gap-6 mb-5">
+                    {{-- Setting the exact start time and date --}}
                     <div>
                         <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Start Time</label>
+                        {{-- We convert the database timestamp to HTML datetime-local format --}}
                        <input type="datetime-local" name="start_time" value="{{ date('Y-m-d\TH:i', strtotime($session->start_time)) }}" class="w-full border-gray-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white rounded-lg p-3" required>
                     </div>
+                    {{-- Duration of the class in minutes --}}
                     <div>
                         <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Duration (Mins)</label>
                         <input type="number" name="duration_minutes" value="{{ $session->duration_minutes }}" class="w-full border-gray-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white rounded-lg p-3">
                     </div>
                 </div>
 
+                {{-- PAYMENT CONFIGURATIONS --}}
                 <div class="bg-indigo-50 dark:bg-slate-900/50 p-6 rounded-xl border border-indigo-100 dark:border-slate-700 mb-6">
                     <h3 class="font-bold text-indigo-700 dark:text-indigo-400 mb-4">💰 Payment Settings</h3>
                     <div class="grid grid-cols-2 gap-6">
+                        {{-- Selecting between Free or Paid models --}}
                         <div>
                             <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Fee Model</label>
                             <select name="fee_type" class="w-full border-gray-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white rounded-lg p-3">
@@ -53,6 +65,7 @@
                                 <option value="per_person" {{ $session->fee_type == 'per_person' ? 'selected' : '' }}>Fixed Fee</option>
                             </select>
                         </div>
+                        {{-- Setting the amount in LKR --}}
                         <div>
                             <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Amount (LKR)</label>
                             <input type="number" name="base_fee" value="{{ $session->base_fee }}" class="w-full border-gray-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white rounded-lg p-3">
@@ -60,12 +73,14 @@
                     </div>
                 </div>
 
+                {{-- Submit button to save all changes --}}
                 <button type="submit" class="w-full bg-primary hover:bg-indigo-700 text-white font-bold py-3 rounded-xl shadow-lg transition">
                     💾 Save Changes
                 </button>
             </form>
         </div>
 
+        {{-- SECTION 2: FILE UPLOAD (MATERIALS) --}}
         <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg p-8 border border-gray-100 dark:border-slate-700">
             <h3 class="text-lg font-bold text-gray-800 dark:text-white mb-4 border-b pb-2 dark:border-slate-700">
                 📚 Class Materials (PDF/Docs)
@@ -93,15 +108,18 @@
             @endphp
 
             <div class="space-y-3">
+                {{-- Loop through each file and display it --}}
                 @foreach($materials as $file)
                 <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-slate-900 rounded-lg border border-gray-200 dark:border-slate-700">
                     <div class="flex items-center gap-3">
                         <i class="fas fa-file-pdf text-red-500 text-xl"></i>
+                        {{-- Link to view or download the uploaded file --}}
                         <a href="{{ $file->file_path }}" target="_blank" class="text-gray-700 dark:text-gray-300 font-medium hover:text-primary hover:underline">
                             {{ $file->title }}
                         </a>
                     </div>
                     
+                    {{-- Placeholder for delete functionality --}}
                     <button class="text-red-500 hover:text-red-700 text-sm font-bold" title="Delete File">
                         <i class="fas fa-trash"></i>
                     </button>

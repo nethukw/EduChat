@@ -12,12 +12,12 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware) {
 
-        // ✅ Role Middleware
+        // Role Middleware
         $middleware->alias([
             'role' => \App\Http\Middleware\RoleMiddleware::class,
         ]);
 
-        // ✅ EXCLUDE STRIPE WEBHOOK FROM CSRF (THIS FIXES 419)
+        // EXCLUDE STRIPE WEBHOOK FROM CSRF (THIS FIXES 419)
         $middleware->validateCsrfTokens(except: [
             'stripe/webhook',
         ]);

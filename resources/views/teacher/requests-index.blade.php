@@ -37,7 +37,7 @@
                     <i class="far fa-clock mr-1"></i> {{ \Carbon\Carbon::parse($request->created_at)->diffForHumans() }}
                 </span>
                 
-                {{-- ✅ Fixed: use 'topic' in the route helper for pre-filling --}}
+                {{--  use 'topic' in the route helper for pre-filling --}}
                 <a href="{{ route('teacher.sessions.create', ['topic' => $request->topic]) }}" class="text-xs font-black text-indigo-600 dark:text-indigo-400 hover:underline">
                     Create Session <i class="fas fa-arrow-right ml-1"></i>
                 </a>

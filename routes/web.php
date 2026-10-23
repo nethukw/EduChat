@@ -3,7 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
-// සියලුම Controllers Import කිරීම
+// Importing Controllers
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\TeacherController;
@@ -69,8 +69,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     })->name('notifications.read');
 
     /* --------------------------------------------------------------------
-        🎓 SHARED SESSION CREATION (Role: 0 and 1)
-        ශිෂ්‍යයන්ට (0) සහ ගුරුවරුන්ට (1) දෙදෙනාටම පන්ති හැදීමට මෙතැනින් අවසර ලැබේ.
+         SHARED SESSION CREATION (Role: 0 and 1)
+       
     -------------------------------------------------------------------- */
     Route::middleware(['role:0,1'])->prefix('teacher')->name('teacher.')->group(function () {
         Route::get('/sessions/create', [TeacherController::class, 'createSession'])->name('sessions.create');
@@ -78,7 +78,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     });
 
     /* --------------------------------------------------------------------
-        🧑‍🎓 STUDENT FEATURES (Role 0)
+         STUDENT FEATURES (Role 0)
     -------------------------------------------------------------------- */
     Route::prefix('student')->name('student.')->group(function () {
         Route::get('/discussions', [StudentController::class, 'discussions'])->name('discussions');
@@ -97,7 +97,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/quizzes/{id}/take', [StudentController::class, 'takeQuiz'])->name('quizzes.take');
         Route::post('/quizzes/{id}/submit', [StudentController::class, 'submitQuiz'])->name('quizzes.submit');
         Route::get('/leaderboard', [StudentController::class, 'leaderboard'])->name('leaderboard');
-    });
+    
+        Route::post('/rate-teacher', [StudentController::class, 'storeRating'])->name('rate_teacher');
+        });
 
     /* --------------------------------------------------------------------
         💳 PAYMENT SYSTEM
@@ -131,6 +133,7 @@ Route::middleware(['auth', 'role:1'])->prefix('teacher')->name('teacher.')->grou
     Route::delete('/questions/{id}', [TeacherController::class, 'deleteQuizQuestion'])->name('quizzes.questions.delete');
     Route::get('/quizzes/{id}/results', [TeacherController::class, 'viewQuizResults'])->name('quizzes.results');
     
+Route::delete('/quizzes/{id}', [TeacherController::class, 'deleteQuiz'])->name('quizzes.destroy');
     Route::get('/feedback', [TeacherController::class, 'feedback'])->name('feedback.index');
 });
 
@@ -167,9 +170,30 @@ Route::middleware(['auth', 'role:3'])->prefix('admin')->name('admin.')->group(fu
 
     Route::get('/discussions', [AdminController::class, 'discussions'])->name('discussions');
     Route::delete('/discussions/{id}', [AdminController::class, 'deleteDiscussion'])->name('discussions.delete');
-});
+    Route::get('/reports/generate', [AdminController::class, 'generateReport'])->name('reports.generate');
+    });
 
 /* --------------------------------------------------------------------
     💳 EXTERNAL SERVICES
 -------------------------------------------------------------------- */
 Route::post('/stripe/webhook', [StripeWebhookController::class, 'handle']);
+
+/*
+|--------------------------------------------------------------------------
+| 🔔 NOTIFICATION SYSTEM ROUTES
+|--------------------------------------------------------------------------
+*/
+// mark all notifications as read
+Route::get('/notifications/mark-all-read', function () {
+    auth()->user()->unreadNotifications->markAsRead();
+    return back()->with('success', 'All notifications marked as read.');
+})->name('notifications.read_all');
+
+// mark a single notification as read and redirect
+Route::get('/notifications/{id}/read', function ($id) {
+    $notification = auth()->user()->notifications()->findOrFail($id);
+    $notification->markAsRead();
+    
+    // Redirect to the link stored in the notification data or to dashboard
+    return redirect($notification->data['link'] ?? '/dashboard');
+})->name('notifications.read_single');
